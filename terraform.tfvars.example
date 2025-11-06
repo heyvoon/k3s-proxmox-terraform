@@ -1,0 +1,35 @@
+# Proxmox Connection
+proxmox_api_url          = "https://192.168.1.200:8006/api2/json"
+proxmox_api_token_id     = "root@pam!terraform"
+proxmox_api_token_secret = "YOUR_TOKEN_SECRET_HERE"
+
+# SSH Key
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKdSE8dhEHhDNpMC20mLDMful5dwSOnxpswCtUFQUX7 victus laptop primary key"
+
+# Proxmox Settings
+proxmox_node     = "proxmox"
+template_id      = 9100
+storage          = "local-zfs"
+snippet_storage  = "usb-storage-01"
+bridge           = "vmbr0"
+gateway          = "192.168.1.1"
+nameserver       = "192.168.1.1"
+searchdomain     = "local"
+
+# Control Plane Configuration
+control_plane_count    = 1
+control_plane_cpu      = 4
+control_plane_memory   = 8192
+control_plane_disk_size = "30G"
+control_plane_ip_start = "192.168.1.180"
+
+# Worker Configuration
+worker_count     = 3
+worker_cpu       = 2
+worker_memory    = 4096
+worker_disk_size = "30G"
+worker_ip_start  = "192.168.1.185"
+
+# K3s Configuration
+k3s_version = "v1.31.3+k3s1"
+# k3s_token = ""  # Leave empty to auto-generate

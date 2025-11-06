@@ -1,0 +1,47 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+!terraform.tfvars.example
+crash.log
+*.log
+
+# Ansible
+*.retry
+ansible/*.retry
+
+# Kubeconfig
+kubeconfig
+*.kubeconfig
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# vscode settings
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json 
+.vscode/*.code-workspace
+*.code-workspace

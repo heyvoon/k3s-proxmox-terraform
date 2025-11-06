@@ -1,0 +1,146 @@
+---
+- name: Install K3s on Control Plane
+  hosts: control_plane
+  become: yes
+  vars:
+    k3s_token: "{{ lookup('env', 'K3S_TOKEN') }}"
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - ca-certificates
+        state: present
+
+    - name: Download K3s install script
+      get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: '0755'
+
+    - name: Install K3s server
+      shell: |
+        INSTALL_K3S_VERSION={{ k3s_version }} \
+        K3S_TOKEN={{ k3s_token }} \
+        sh /tmp/k3s-install.sh server \
+          --cluster-init \
+          --disable=traefik \
+          --write-kubeconfig-mode=644 \
+          --tls-san={{ ansible_host }} \
+          --node-name={{ inventory_hostname }}
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Wait for K3s to be ready
+      wait_for:
+        port: 6443
+        delay: 5
+        timeout: 300
+
+    - name: Get K3s node token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: node_token
+
+    - name: Save node token
+      set_fact:
+        k3s_node_token: "{{ node_token.content | b64decode | trim }}"
+
+    - name: Display control plane status
+      shell: kubectl get nodes
+      register: nodes_status
+      changed_when: false
+
+    - name: Show nodes
+      debug:
+        var: nodes_status.stdout_lines
+
+- name: Install K3s on Workers
+  hosts: workers
+  become: yes
+  vars:
+    k3s_url: "https://{{ hostvars[groups['control_plane'][0]]['ansible_host'] }}:6443"
+    k3s_token: "{{ hostvars[groups['control_plane'][0]]['k3s_node_token'] }}"
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - ca-certificates
+        state: present
+
+    - name: Download K3s install script
+      get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: '0755'
+
+    - name: Install K3s agent
+      shell: |
+        INSTALL_K3S_VERSION={{ k3s_version }} \
+        K3S_URL={{ k3s_url }} \
+        K3S_TOKEN={{ k3s_token }} \
+        sh /tmp/k3s-install.sh agent \
+          --node-name={{ inventory_hostname }}
+      args:
+        creates: /usr/local/bin/k3s-agent
+
+    - name: Wait for K3s agent to be ready
+      wait_for:
+        path: /var/lib/rancher/k3s/agent/kubelet.kubeconfig
+        timeout: 300
+
+- name: Verify Cluster
+  hosts: control_plane
+  become: yes
+  tasks:
+    - name: Wait for all nodes to be ready
+      shell: |
+        kubectl wait --for=condition=Ready nodes --all --timeout=300s
+      register: wait_result
+      retries: 5
+      delay: 10
+      until: wait_result.rc == 0
+
+    - name: Get cluster info
+      shell: kubectl get nodes -o wide
+      register: cluster_info
+      changed_when: false
+
+    - name: Display cluster info
+      debug:
+        var: cluster_info.stdout_lines
+
+    - name: Get kubeconfig
+      slurp:
+        src: /etc/rancher/k3s/k3s.yaml
+      register: kubeconfig_content
+
+    - name: Save kubeconfig locally
+      delegate_to: localhost
+      become: no
+      copy:
+        content: "{{ kubeconfig_content.content | b64decode | regex_replace('127.0.0.1', hostvars[groups['control_plane'][0]]['ansible_host']) }}"
+        dest: "{{ playbook_dir }}/../kubeconfig"
+        mode: '0600'
+
+    - name: Display success message
+      debug:
+        msg: 
+          - "K3s cluster is ready!"
+          - "Control plane: {{ ansible_host }}"
+          - "Workers: {{ groups['workers'] | map('extract', hostvars, 'ansible_host') | list }}"
+          - "Kubeconfig saved to: {{ playbook_dir }}/../kubeconfig"
+          - "Use: export KUBECONFIG={{ playbook_dir }}/../kubeconfig"
