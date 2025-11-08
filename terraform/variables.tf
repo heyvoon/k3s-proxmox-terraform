@@ -86,19 +86,19 @@ variable "control_plane_count" {
 variable "control_plane_cpu" {
   description = "CPU cores for control plane nodes"
   type        = number
-  default     = 4
+  default     = 2
 }
 
 variable "control_plane_memory" {
   description = "Memory in MB for control plane nodes"
   type        = number
-  default     = 8192
+  default     = 4096
 }
 
 variable "control_plane_disk_size" {
   description = "Disk size for control plane nodes"
   type        = string
-  default     = "30G"
+  default     = "10G"
 }
 
 variable "control_plane_ip_start" {
@@ -117,19 +117,19 @@ variable "worker_count" {
 variable "worker_cpu" {
   description = "CPU cores for worker nodes"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "worker_memory" {
   description = "Memory in MB for worker nodes"
   type        = number
-  default     = 4096
+  default     = 2048
 }
 
 variable "worker_disk_size" {
   description = "Disk size for worker nodes"
   type        = string
-  default     = "30G"
+  default     = "10G"
 }
 
 variable "worker_ip_start" {
@@ -142,7 +142,7 @@ variable "worker_ip_start" {
 variable "k3s_version" {
   description = "K3s version to install"
   type        = string
-  default     = "v1.31.3+k3s1"
+  default     = "v1.34.1+k3s1"
 }
 
 variable "k3s_token" {
