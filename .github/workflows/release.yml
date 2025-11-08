@@ -9,6 +9,8 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -43,6 +45,9 @@ jobs:
           --exclude='kubeconfig' \
           --exclude='.DS_Store' \
           --exclude='*.retry' \
+          --exclude='*.tar.gz' \
+          --exclude='*.tar.gz.sha256' \
+          --exclude='*.tar.gz.md5' \
           .
         
         # Create checksums
