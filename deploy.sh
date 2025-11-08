@@ -127,7 +127,7 @@ if [[ "$response" =~ ^[Yy][Ee][Ss]$ ]]; then
     echo -e "   ${YELLOW}kubectl port-forward svc/argocd-server -n argocd 8080:80${NC}"
     echo "Then open: http://localhost:8080"
     echo "Username: admin"
-    echo "Password: (check the ArgoCD secret in the argocd namespace)"
+    echo "Password: $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)"
 fi
 echo ""
 echo -e "${GREEN}Kubeconfig saved to: $(pwd)/kubeconfig${NC}"

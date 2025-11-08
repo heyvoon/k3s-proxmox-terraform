@@ -104,7 +104,7 @@ kubectl port-forward svc/argocd-server -n argocd 8080:80
 
 # Access in browser: http://localhost:8080
 # Username: admin
-# Password: (check the ArgoCD secret or deployment output)
+# Password: $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
 ```
 
 ## Manual Deployment (Step by Step)
