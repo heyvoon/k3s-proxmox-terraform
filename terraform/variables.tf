@@ -1,7 +1,7 @@
 variable "proxmox_api_url" {
   description = "Proxmox API URL"
   type        = string
-  default     = "https://192.168.1.200:8006/api2/json"
+  default     = "https://<YOUR_PROXMOX_HOST>:8006/api2/json"
 }
 
 variable "proxmox_api_token_id" {
