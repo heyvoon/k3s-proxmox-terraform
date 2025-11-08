@@ -32,6 +32,9 @@ jobs:
   terraform-security:
     name: Terraform Security Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     
     steps:
     - name: Checkout code
@@ -76,6 +79,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: yaml
+        build-mode: none
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
