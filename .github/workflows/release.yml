@@ -23,19 +23,13 @@ jobs:
       with:
         terraform_version: 1.5.0
 
-    - name: Validate Terraform
-      run: |
-        cd terraform
-        terraform init -backend=false
-        terraform validate
-
     - name: Create Release Archive
       run: |
         # Create a clean archive without .git and other unnecessary files
         VERSION=${GITHUB_REF#refs/tags/}
         ARCHIVE_NAME="k3s-proxmox-terraform-${VERSION}"
         
-        # Create archive
+        # Create archive first to avoid file modification conflicts
         tar -czf "${ARCHIVE_NAME}.tar.gz" \
           --exclude='.git' \
           --exclude='.github' \
@@ -56,6 +50,12 @@ jobs:
         
         # List created files
         ls -la "${ARCHIVE_NAME}"*
+
+    - name: Validate Terraform
+      run: |
+        cd terraform
+        terraform init -backend=false
+        terraform validate
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
