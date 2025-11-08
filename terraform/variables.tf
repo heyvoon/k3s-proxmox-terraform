@@ -19,7 +19,7 @@ variable "proxmox_api_token_secret" {
 variable "ssh_public_key" {
   description = "SSH public key for VM access"
   type        = string
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKKdSE8dhEHhDNpMC20mLDMful5dwSOnxpswCtUFQUX7 victus laptop primary key"
+  default     = "YOUR_SSH_PUBLIC_KEY_HERE"
 }
 
 variable "proxmox_node" {
@@ -37,7 +37,7 @@ variable "template_id" {
 variable "vm_id_start" {
   description = "Starting VM ID for created VMs"
   type        = number
-  default     = 3000
+  default     = 30000
 }
 
 variable "storage" {
