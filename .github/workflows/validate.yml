@@ -38,7 +38,7 @@ jobs:
         terraform validate
 
     - name: Terraform Security Scan
-      uses: aquasecurity/tfsec@main
+      uses: aquasecurity/tfsec@latest
       with:
         directory: terraform
 

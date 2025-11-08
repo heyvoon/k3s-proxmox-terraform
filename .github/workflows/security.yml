@@ -43,7 +43,7 @@ jobs:
         terraform_version: 1.5.0
 
     - name: Terraform Security Scan with TFSec
-      uses: aquasecurity/tfsec@main
+      uses: aquasecurity/tfsec@latest
       with:
         directory: terraform
         soft-fail: true
